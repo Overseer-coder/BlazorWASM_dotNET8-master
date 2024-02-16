@@ -1,0 +1,99 @@
+﻿@page "/api"
+@using System.Text
+@inject HttpClient http
+@inject NavigationManager nav
+
+<PageTitle>Call API</PageTitle>
+
+<h1>Chamada API</h1>
+
+<button class="btn btn-success" @onclick="PostAPI">Post API</button>
+<button class="btn btn-danger" @onclick="DeleteAPI">Delete API</button>
+<button class="btn btn-warning" @onclick="PutAPI">Put API</button>
+<button class="btn btn-primary" @onclick="ChamadaAPI">Call API</button>
+
+
+
+
+
+<br />
+<br />
+
+@if (Pessoas != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var i_Pessoa in Pessoas)
+            {
+                <tr>
+                    <td>@i_Pessoa.Id</td>
+                    <td>@i_Pessoa.Name</td>
+                    <td>@i_Pessoa.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<br/>
+<br/>
+
+
+@code {
+    private List<Person> Pessoas; //= new List<Person>();
+
+    private async Task ChamadaAPI()
+    {
+        Pessoas = await http.GetFromJsonAsync<List<Person>>("/api/People/GetPeople");
+    }
+
+    private async Task PostAPI()
+    {
+        nav.NavigateTo("/formulariocadastro");
+    }
+    
+    private async Task PutAPI()
+    {
+        nav.NavigateTo("/formularioupdate");
+    }
+
+    private async Task DeleteAPI()
+    {
+        nav.NavigateTo("/deleteperson");
+    }
+     /*
+     * No projeto BlazorWASM --> Controllers --> PeopleController
+     * Criação dos endpoints. Este projeto tem integrado o EntityFramework -> Modalidade Coding First.
+     * 
+     * No Projeto BlazorWASM.Client --> Pages --> CallAPI
+     * Exemplo de chamada API do tipo GET
+     * 
+     * Implementei OpenAPI para facilitar a visualização dos endpoints.
+     * Rota: https://localhost:XXXXX/Swagger
+     * 
+     * Primeiro exercício:
+     * Implementar CRUD completo integrado com API's (GET/POST/PUT/DELETE),
+     * Dica: Não esqueça de colocar o Annotation. 
+     * 
+     * Segundo exercício:
+     * Com base no CRUD anterior, implementar validação de Formulário no frontend e backend. (Validação com Annotation Etc)
+     * 
+     * Terceiro exercício
+     * Com base no exercício anterior, converter o que antes estava em memória para persistência de dados utilizando EF - Coding First.
+     * Dica 1: Vai precisar criar o DbSet no ApplicationDbContext
+     * Dica 2: Pode definir o comportamento da PK através da Annotation [Key] ou através do OnModelCreating. A utilização das annotations é mais simples mas limitada.
+     * 
+     * Quarto exercício
+     * Implementação completa utilizando a library da DevExpress, tanto o componente do tipo Grid quanto o compotente do tipo Formulário.
+     * 
+     * 
+     */
+
+}

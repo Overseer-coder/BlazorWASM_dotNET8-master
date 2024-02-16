@@ -1,0 +1,46 @@
+﻿@page "/formulariocadastro"
+@using System.Text
+@inject HttpClient http
+@inject NavigationManager nav
+
+<PageTitle>Formulário</PageTitle>
+
+<h3>Formulário de Cadastro</h3>
+
+
+<EditForm Model="@p" OnValidSubmit="@EfetivarCadastro">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="nome">Nome:</label>
+        <InputText id="nome" @bind-Value="p.Name" class="form-control" placeholder="Digite o nome aqui" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" @bind-Value="p.Email" class="form-control" placeholder="Digite o email aqui. Ex:email@hotmail.com" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Enviar</button>
+</EditForm>
+
+
+@code {
+    private Person p = new Person(){Name = "", Email = ""};
+
+    private async Task EfetivarCadastro()
+    {
+        var NovaPessoa = new
+        {
+            Name = p.Name,
+            Email = p.Email
+        };
+
+        await http.PostAsJsonAsync("/api/People/PostPeople", NovaPessoa);
+        Thread.Sleep(500);
+        nav.NavigateTo("/api");
+    }
+}
+
+

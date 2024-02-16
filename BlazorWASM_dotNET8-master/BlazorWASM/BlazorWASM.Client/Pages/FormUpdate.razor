@@ -1,0 +1,92 @@
+﻿@page "/formularioupdate"
+@using System.Text
+@inject HttpClient http
+@inject NavigationManager nav
+
+<PageTitle>Formulário</PageTitle>
+
+<h3>Formulário de Atualização</h3>
+
+@if (p1 != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Selecionar</th>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var i_Pessoa in p1)
+            {
+                <tr>
+                    <td><input type="checkbox" @onclick="(e => SelecionarRegistro(i_Pessoa.Id))" checked="@(i_Pessoa.Id == RegistroId)" /></td>
+                    <td>@i_Pessoa.Id</td>
+                    <td>@i_Pessoa.Name</td>
+                    <td>@i_Pessoa.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+    <br />
+    <EditForm Model="@p" OnValidSubmit="@EfetivarUpdate">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="nome">Nome:</label>
+            <InputText id="nome" @bind-Value="p.Name" class="form-control" placeholder="Digite o nome aqui" />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <InputText id="email" @bind-Value="p.Email" class="form-control" placeholder="Digite o email aqui. Ex:email@hotmail.com" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Enviar</button>
+    </EditForm>
+
+}
+
+
+
+
+
+@code {
+    private Person p = new Person() { Name = "", Email = "" };
+    private List<Person> p1;
+    private int RegistroId;
+
+    private void SelecionarRegistro(int id)
+    {
+        RegistroId = id;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        p1 = await http.GetFromJsonAsync<List<Person>>("/api/People/GetPeople");
+        base.OnInitialized();
+
+    }
+
+    private async Task EfetivarUpdate()
+    {
+       
+        var UpdatedPerson = new
+        {
+            Id = RegistroId,
+            Name = p.Name,
+            Email = p.Email
+        };
+
+        await http.PutAsJsonAsync("/api/People/PutPeople", UpdatedPerson);
+        Thread.Sleep(500);
+        nav.NavigateTo("/api");
+    }
+}
+
+
+
